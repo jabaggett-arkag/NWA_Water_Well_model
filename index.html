@@ -126,6 +126,47 @@ app.loadSceneFile("./data/NWA_water_wells/scene.js", function (scene) {
         zMax = undefined;
     gui.dat.initCustomPlaneFolder(zMin, zMax);
   }
+// Create the global clipping plane with initial normal facing down the Y axis (horizontal plane)
+const globalPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), 0);
+
+// Enable clipping in renderer (use your renderer reference, e.g. app.renderer)
+app.renderer.localClippingEnabled = true;
+app.renderer.clippingPlanes = [globalPlane];
+
+// Create a new dat.GUI instance for clipping controls
+const clippingGui = new dat.GUI();
+
+// Store current rotation angle in radians
+let rotationAngle = 0;
+
+// Function to update plane normal vector based on rotation around Z axis
+function updatePlaneNormal(angleRadians) {
+  const x = Math.sin(angleRadians);
+  const y = -Math.cos(angleRadians);
+  globalPlane.normal.set(x, y, 0);
+  globalPlane.normal.normalize();
+  app.render(); // Or call your render update function
+}
+
+// Add folder to GUI for clipping plane controls
+const folder = clippingGui.addFolder('Clipping Plane Controls');
+
+// Slider for adjusting plane offset (constant)
+folder.add(globalPlane, 'constant', -100, 100)
+  .name('Offset')
+  .onChange(() => {
+    app.render();
+  });
+
+// Slider for rotating plane around Z axis (0 to 360 degrees)
+folder.add({ angleDegrees: 0 }, 'angleDegrees', 0, 360)
+  .name('Rotation (deg)')
+  .onChange(val => {
+    rotationAngle = val * Math.PI / 180; // degrees to radians
+    updatePlaneNormal(rotationAngle);
+  });
+
+folder.open();
 });
 </script>
 </body>
