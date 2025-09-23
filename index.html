@@ -152,7 +152,7 @@ function updatePlaneNormal(angleRadians) {
 const folder = clippingGui.addFolder('Clipping Plane Controls');
 
 // Slider for adjusting plane offset (constant)
-folder.add(globalPlane, 'constant', -100, 100)
+folder.add(globalPlane, 'constant', -50000, 50000)
   .name('Offset')
   .onChange(() => {
     app.render();
